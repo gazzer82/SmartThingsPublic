@@ -38,8 +38,8 @@ preferences {
 		input "frontdoor", title: "Virtual Contact Sensor for Front Door", "capability.contactSensor"
 		input "patioldoor", title: "Virtual Contact Sensor for Left Patio Door", "capability.contactSensor"
 		input "patiordoor", title: "Virtual Contact Sensor for Right Patio Door", "capability.contactSensor"
-        //input "allpatiodoor", title: "Virtual Contact Sensor for all Patio Doors", "capability.contactSensor", required: false
-		//input "alldoor", title: "Virtual Contact Sensor for all Doors", "capability.contactSensor", required: false
+        input "allpatiodoor", title: "Virtual Contact Sensor for all Patio Doors", "capability.contactSensor", required: false
+		input "alldoor", title: "Virtual Contact Sensor for all Doors", "capability.contactSensor", required: false
 	}
 
 	section("Select the Arduino ST_Anything_Doors device") {
