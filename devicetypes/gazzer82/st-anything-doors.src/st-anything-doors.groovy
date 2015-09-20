@@ -23,14 +23,12 @@
 
 metadata {
 	definition (name: "ST_Anything_Doors", namespace: "gazzer82", author: "Gareth Jeanne") {
-		capability "Configuration"
-		capability "Contact Sensor"
-		capability "Sensor"
-		capability "Polling"
+        	capability "Refresh"
+        	capability "Contact Sensor"
 
-		attribute "frontDoor", "string"
-		attribute "patioLDoor", "string"
-		attribute "patioRDoor", "string"
+        	attribute "frontDoor", "string"
+        	attribute "patioLDoor", "string"
+        	attribute "patioRDoor", "string"
         
 	}
 
@@ -58,7 +56,7 @@ metadata {
 			state("closed", label:'${name}', icon:"st.contact.contact.closed", backgroundColor:"#79b821")
  		}
         
-        main (["frontDoor","patioLDoor","patioRDoor"])
+        main ("frontDoor")
         details(["frontDoor","patioLDoor","patioRDoor","configure"])
 	}
 }
@@ -80,8 +78,38 @@ def parse(String description) {
 
     return result
 }
+/*
+//Map parse(String description) {
+def parse(String description) {
+	def name = null
+	def value = zigbee.parse(description)?.text
+    log.debug "Value is ${value}"
+	def linkText = getLinkText(device)
+	def descriptionText = getDescriptionText(description, linkText, value)
+	def handlerName = value
+	def isStateChange = value != "ping"
+	def displayed = value && isStateChange
+
+    def incoming_cmd = value.split()
+
+    name = incoming_cmd[0]
+    value = incoming_cmd[1]
+	
+	def result = [
+		value: value,
+        name: value != "ping" ? name : null,
+		handlerName: handlerName,
+		linkText: linkText,
+		descriptionText: descriptionText,
+		isStateChange: isStateChange,
+		displayed: displayed
+	]
+ 	log.debug result
+	return result   
+
+}*/
 
 def poll() {
 	//temporarily implement poll() to issue a configure() command to send the polling interval settings to the arduino
-	configure()
+	//configure()
 }
