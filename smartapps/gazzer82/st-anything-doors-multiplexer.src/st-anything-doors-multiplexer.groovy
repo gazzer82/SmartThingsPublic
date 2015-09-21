@@ -76,8 +76,7 @@ def frontDoorOpen(evt)
     if (frontdoor.currentValue("contact") != "open") {
     	log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	frontdoor.openme()
-        allpatiodoor.openme()
-        alldoor.openme()
+        openVirtual()
     }
 }
 
@@ -86,8 +85,7 @@ def frontDoorClosed(evt)
     if (frontdoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	frontdoor.closeme()
-        allPatioDoorsClosed()
-        allDoorsClosed()
+        closeVirtual()
     }
 }
 
@@ -97,8 +95,7 @@ def patioLDoorOpen(evt)
     if (patioldoor.currentValue("contact") != "open") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patioldoor.openme()
-        allpatiodoor.openme()
-        alldoor.openme()
+        openVirtual()
     }
 }
 
@@ -107,8 +104,7 @@ def patioLDoorClosed(evt)
     if (patioldoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patioldoor.closeme()
-        allPatioDoorsClosed()
-        allDoorsClosed()
+        closeVirtual()
 	}
 }
 
@@ -118,8 +114,7 @@ def patioRDoorOpen(evt)
     if (patiordoor.currentValue("contact") != "open") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patiordoor.openme()
-        allpatiodoor.openme()
-        alldoor.openme()
+        openVirtual()
     }
 }
 
@@ -128,25 +123,35 @@ def patioRDoorClosed(evt)
     if (patiordoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patiordoor.closeme()
-        allPatioDoorsClosed()
-        allDoorsClosed()
+        closeVirtual()
 	}
 }
 
-def allPatioDoorsClosed()
+def closeVirtual()
 {
-	log.debug "All patio doors closed called"
+	log.debug "Virtual closed called"
     allpatiodoor.closeme()
     if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed"){
+    	log.debug "All patio doors closed"
     	allpatiodoor.closeme()
+    }
+    if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed" && frontdoor.currentValue("contact") == "closed"){
+    	log.debug "All doors closed called"
+        alldoor.closeme()
     }
 }
 
-def allDoorsClosed()
+def openVirtual()
 {
-	log.debug "All doors closed called"
-    if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed" && frontdoor.currentValue("contact") == "closed"){
-    	alldoor.closeme()
+	log.debug "Virtual open called"
+    allpatiodoor.closeme()
+    if(patiordoor.currentValue("contact") == "open" || patioldoor.currentValue("contact") == "open"){
+    	log.debug "Only patio doors open"
+    	allpatiodoor.openme()
+    }
+    if(patiordoor.currentValue("contact") == "open" || patioldoor.currentValue("contact") == "open" || frontdoor.currentValue("contact") == "open"){
+    	log.debug "One of the doors open"
+        alldoor.openme()
     }
 }
 
