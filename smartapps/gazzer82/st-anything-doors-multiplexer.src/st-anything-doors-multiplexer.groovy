@@ -35,11 +35,11 @@ definition(
 preferences {
 
 	section("Select the House Doors (Virtual Contact Sensor devices)") {
-		input "frontdoor", title: "Virtual Contact Sensor for Front Door", "capability.contactSensor"
-		input "patioldoor", title: "Virtual Contact Sensor for Left Patio Door", "capability.contactSensor"
-		input "patiordoor", title: "Virtual Contact Sensor for Right Patio Door", "capability.contactSensor"
-        input "allpatiodoor", title: "Virtual Contact Sensor for all Patio Doors", "capability.contactSensor", required: false
-		input "alldoor", title: "Virtual Contact Sensor for all Doors", "capability.contactSensor", required: false
+		input ("frontdoor", title: "Virtual Contact Sensor for Front Door", "capability.contactSensor")
+		input ("patioldoor", title: "Virtual Contact Sensor for Left Patio Door", "capability.contactSensor")
+		input ("patiordoor", title: "Virtual Contact Sensor for Right Patio Door", "capability.contactSensor")
+        input ("allpatiodoor", title: "Virtual Contact Sensor for all Patio Doors", required: "false", "capability.contactSensor")
+		input ("alldoor", title: "Virtual Contact Sensor for all Doors", required: "false", "capability.contactSensor")
 	}
 
 	section("Select the Arduino ST_Anything_Doors device") {
@@ -76,8 +76,8 @@ def frontDoorOpen(evt)
     if (frontdoor.currentValue("contact") != "open") {
     	log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	frontdoor.openme()
-        //allpatiodoor.openme()
-        //alldoor.openme()
+        allpatiodoor.openme()
+        alldoor.openme()
     }
 }
 
@@ -86,8 +86,8 @@ def frontDoorClosed(evt)
     if (frontdoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	frontdoor.closeme()
-        //allPatioDoorsClosed()
-        //allDoorsClosed()
+        allPatioDoorsClosed()
+        allDoorsClosed()
     }
 }
 
@@ -97,9 +97,8 @@ def patioLDoorOpen(evt)
     if (patioldoor.currentValue("contact") != "open") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patioldoor.openme()
-        //allpatiodoor.closeme()
-        //alldoor.closeme()
-        //alldoor.openme()
+        allpatiodoor.openme()
+        alldoor.openme()
     }
 }
 
@@ -108,8 +107,8 @@ def patioLDoorClosed(evt)
     if (patioldoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patioldoor.closeme()
-        //allPatioDoorsClosed()
-        //allDoorsClosed()
+        allPatioDoorsClosed()
+        allDoorsClosed()
 	}
 }
 
@@ -119,8 +118,8 @@ def patioRDoorOpen(evt)
     if (patiordoor.currentValue("contact") != "open") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patiordoor.openme()
-        //allpatiodoor.openme()
-        //alldoor.openme()
+        allpatiodoor.openme()
+        alldoor.openme()
     }
 }
 
@@ -129,22 +128,27 @@ def patioRDoorClosed(evt)
     if (patiordoor.currentValue("contact") != "closed") {
 		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
     	patiordoor.closeme()
-        //allPatioDoorsClosed()
-        //allDoorsClosed()
+        allPatioDoorsClosed()
+        allDoorsClosed()
 	}
 }
 
-/*def allPatioDoorsClosed()
+def allPatioDoorsClosed()
 {
-	//log.debug 'All patio doors closed'
+	log.debug "All patio doors closed called"
     allpatiodoor.closeme()
+    if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed"){
+    	allpatiodoor.closeme()
+    }
 }
 
 def allDoorsClosed()
 {
-	//log.debug 'All doors closed'
-    alldoor.closeme()
-}*/
+	log.debug "All doors closed called"
+    if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed" && frontdoor.currentValue("contact") == "closed"){
+    	alldoor.closeme()
+    }
+}
 
 def initialize() {
 	// TODO: subscribe to attributes, devices, locations, etc.
