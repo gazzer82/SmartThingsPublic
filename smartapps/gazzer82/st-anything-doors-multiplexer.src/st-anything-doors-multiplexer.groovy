@@ -132,12 +132,20 @@ def closeVirtual()
 	log.debug "Virtual closed called"
     allpatiodoor.closeme()
     if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed"){
-    	log.debug "All patio doors closed"
-    	allpatiodoor.closeme()
+        if(allpatiodoor.currentValue("contact") != "closed"){
+        	log.debug "Patio doors master currently open so closing"
+    		allpatiodoor.closeme()
+        } else {
+        	log.debug "Patio doors master already closed so not doing anything"
+        }
     }
     if(patiordoor.currentValue("contact") == "closed" && patioldoor.currentValue("contact") == "closed" && frontdoor.currentValue("contact") == "closed"){
-    	log.debug "All doors closed called"
-        alldoor.closeme()
+        if(alldoor.currentValue("contact") != "closed"){
+        	log.debug "All doors master currently open so closing"
+        	alldoor.closeme()
+        } else {
+        	log.debug "All doors master already closed so not doing anything"
+        }
     }
 }
 
@@ -146,12 +154,21 @@ def openVirtual()
 	log.debug "Virtual open called"
     allpatiodoor.closeme()
     if(patiordoor.currentValue("contact") == "open" || patioldoor.currentValue("contact") == "open"){
-    	log.debug "Only patio doors open"
-    	allpatiodoor.openme()
+    	log.debug allpatiodoor.currentValue("contact")
+        if(allpatiodoor.currentValue("contact") != "open"){
+        	log.debug "Patio door master not already open, opening it"
+    		allpatiodoor.openme()
+        } else {
+        	log.debug "Patio door master already open, not updating"
+        }
     }
     if(patiordoor.currentValue("contact") == "open" || patioldoor.currentValue("contact") == "open" || frontdoor.currentValue("contact") == "open"){
-    	log.debug "One of the doors open"
-        alldoor.openme()
+        if(alldoor.currentValue("contact") != "open"){
+        	log.debug "Door master not already open, opening it"
+        	alldoor.openme()
+        } else {
+        	log.debug "Door master already open, not updating"
+        }
     }
 }
 
