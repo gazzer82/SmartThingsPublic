@@ -35,7 +35,7 @@ definition(
 preferences {
 
 	section("Select the House Doors (Virtual Contact Sensor devices)") {
-		input ("frontdoor", title: "Virtual Contact Sensor for Front Door", "capability.contactSensor")
+		input ("frontdoor", title: "Contact Sensor for Front Door", "capability.contactSensor")
 		input ("patioldoor", title: "Virtual Contact Sensor for Left Patio Door", "capability.contactSensor")
 		input ("patiordoor", title: "Virtual Contact Sensor for Right Patio Door", "capability.contactSensor")
         input ("allpatiodoor", title: "Virtual Contact Sensor for all Patio Doors", required: "false", "capability.contactSensor")
@@ -47,21 +47,27 @@ preferences {
     }    
 }
 
+def initialize() {
+	subscribe()
+	closeVirtual()
+    openVirtual()
+}
+
 def installed() {
 	log.debug "Installed with settings: ${settings}"
-	subscribe()
+	initialize()
 }
 
 def updated() {
 	log.debug "Updated with settings: ${settings}"
-	unsubscribe()
-	subscribe()
+    unsubscribe()
+	initialize()
 }
 
 def subscribe() {
     
-    subscribe(arduino, "frontDoor.open", frontDoorOpen)
-    subscribe(arduino, "frontDoor.closed", frontDoorClosed)
+    subscribe(frontdoor, "contact.open", frontDoorOpen)
+    subscribe(frontdoor, "contact.closed", frontDoorClosed)
     
     subscribe(arduino, "patioLDoor.open", patioLDoorOpen)
     subscribe(arduino, "patioLDoor.closed", patioLDoorClosed)
@@ -73,20 +79,24 @@ def subscribe() {
 // --- Front Door --- 
 def frontDoorOpen(evt)
 {
-    if (frontdoor.currentValue("contact") != "open") {
-    	log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	frontdoor.openme()
+	log.debug "frontdoorevent($evt.name: $evt.value: $evt.deviceId)"
+    	log.debug frontdoor.currentValue("contact")
+    //if (frontdoor.currentValue("contact") != "open") {
+        //log.debug "frontdoorevent($evt.name: $evt.value: $evt.deviceId)"
+    	//log.debug frontdoor.currentValue("contact")
         openVirtual()
-    }
+    //}
 }
 
 def frontDoorClosed(evt)
 {
-    if (frontdoor.currentValue("contact") != "closed") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	frontdoor.closeme()
+	log.debug "frontdoorevent($evt.name: $evt.value: $evt.deviceId)"
+    	log.debug frontdoor.currentValue("contact")
+    //if (frontdoor.currentValue("contact") != "closed") {
+        //log.debug "frontdoorevent($evt.name: $evt.value: $evt.deviceId)"
+    	//log.debug frontdoor.currentValue("contact")
         closeVirtual()
-    }
+    //}
 }
 
 // --- Patio left Door --- 
@@ -170,8 +180,4 @@ def openVirtual()
         	log.debug "Door master already open, not updating"
         }
     }
-}
-
-def initialize() {
-	// TODO: subscribe to attributes, devices, locations, etc.
 }
