@@ -28,17 +28,43 @@ preferences {
     section("Real Switch...") { 
         input "realswitch", "capability.switch", 
 	title: "Real Switch...", 
-        required: true
+        required: true,
+        multiple: true
     }
     section("Real Dimmer...") { 
         input "realdimmer", "capability.switchLevel", 
 	title: "Real Dimmer...", 
-        required: true
+        required: false,
+        multiple: true
     }
     section("Virtual Stand-in...") {
     	input "standin", "capability.switch",
         title: "Stand In Virtual Switch...",
         required: true
+    }
+    section("Day Modes ...") {
+        input      "dayModes", "mode",
+        title:      "Modes for day mode...",
+        multiple:   true,
+        required:   true
+    }
+    section("Night Modes ...") {
+        input      "nightModes", "mode",
+        title:      "Modes for night mode...",
+        multiple:   true,
+        required:   true
+    }
+    section("Day Level"){
+    	input "dayLevel", "enum",
+        title: "Dimmer level for day",
+        options: [[10:"10%"],[20:"20%"],[30:"30%"],[40:"40%"],[50:"50%"],[60:"60%"],[70:"70%"],[80:"80%"],[90:"90%"],[100:"100%"]],
+        required: false
+    }
+    section("Night Level"){
+    	input "nightLevel", "enum",
+        title: "Dimmer level for night",
+        options: [[10:"10%"],[20:"20%"],[30:"30%"],[40:"40%"],[50:"50%"],[60:"60%"],[70:"70%"],[80:"80%"],[90:"90%"],[100:"100%"]],
+        required: false
     }
 }
 
@@ -54,11 +80,41 @@ def updated() {
 }
 
 def switchOnHandler(evt) {
-    state.wasOff = realswitch.currentValue("switch") == "off"
-    if(state.wasOff)realdimmer.setLevel(80,1)
-    if(state.wasOff)realswitch.on()
+    state.wasOff = false
+    for (thisswitch in realswitch) {
+    	if(thisswitch.currentValue("switch") == "off"){
+        	state.wasOff = true
+        }
+    }
+    log.debug "Switch state is: ${state.wasOff}"
+    if (dayModes.contains(location.mode)) {
+    	log.debug "Setting daytime light to: ${dayLevel}"
+        def dayCleanValue = dayLevel as Integer
+        for (thisdimmer in realdimmer) {
+        	log.debug "Setting dimmer for: ${thisdimmer}"
+    		if(state.wasOff)thisdimmer.setLevel(dayCleanValue)
+       	}
+        for (thisswitch in realswitch) {
+        	log.debug "Turning on: ${thisswitch}"
+    		if(state.wasOff)thisswitch.on()
+       	}
+    } else if (nightModes.contains(location.mode)){
+    	log.debug "Setting nightime light to: ${nightLevel}"
+        def nightCleanValue = nightLevel as Integer
+    	for (thisdimmer in realdimmer) {
+        	log.debug "Setting dimmer for: ${thisdimmer}"
+    		if(state.wasOff)thisdimmer.setLevel(nightCleanValue)
+       	}
+        for (thisswitch in realswitch) {
+        	log.debug "Turning on: ${thisswitch}"
+    		if(state.wasOff)thisswitch.on()
+       	}
+    }
 }
 
 def switchOffHandler(evt) {
-    if(state.wasOff)realswitch.off()
+	for (thisswitch in realswitch) {
+        	log.debug "Turning off: ${thisswitch}"
+    		if(state.wasOff)thisswitch.off()
+    }
 }
